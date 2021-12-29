@@ -1,0 +1,3 @@
+DELIMITER_25 = '=' * 25
+DELIMITER_50 = '=' * 50
+DELIMITER_100 = '=' * 100
