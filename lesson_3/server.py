@@ -2,7 +2,7 @@ import json
 import socket
 import sys
 from lesson_3.common.variables import DEFAULT_PORT, MAX_CONNECTIONS, ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE, \
-    RESPONSE, ERROR, RESPONDEFAULT_IP_ADDRESSSE
+    RESPONSE, ERROR
 from lesson_3.common.utils import get_message, send_message
 
 
@@ -11,7 +11,7 @@ def process_client_message(message):
             and USER in message and message[USER][ACCOUNT_NAME] == 'Guest':
         return {RESPONSE: 200}
     return {
-        RESPONDEFAULT_IP_ADDRESSSE: 400,
+        RESPONSE: 400,
         ERROR: 'Bad Request',
     }
 
