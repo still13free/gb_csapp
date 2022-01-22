@@ -1,8 +1,8 @@
 import unittest
 
-from common.test_variables import *
-from lesson_3.common.variables import RESPONSE, ERROR, USER, ACCOUNT_NAME, TIME, ACTION, PRESENCE
-from lesson_3.client import create_presence, process_ans
+from project.common.test_variables import *
+from project.common.variables import USER, ACCOUNT_NAME, TIME, ACTION, PRESENCE
+from project.client import create_presence, process_ans
 
 
 class TestClient(unittest.TestCase):
