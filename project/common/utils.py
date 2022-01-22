@@ -1,5 +1,6 @@
 import json
 from .variables import MAX_PACKAGE_LENGTH, ENCODING
+from .errors import NonDictInputError, IncorrectDataReceivedError
 
 
 def get_message(client):
@@ -10,13 +11,13 @@ def get_message(client):
         response = json.loads(json_response)
         if isinstance(response, dict):
             return response
-        raise ValueError
-    raise ValueError
+        raise NonDictInputError
+    raise IncorrectDataReceivedError
 
 
 def send_message(sock, message):
     if not isinstance(message, dict):
-        raise TypeError
+        raise NonDictInputError
     js_message = json.dumps(message)
     encoded_message = js_message.encode(ENCODING)
     sock.send(encoded_message)
