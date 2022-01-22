@@ -3,8 +3,8 @@ import time
 import socket
 import sys
 
-from lesson_3.common.variables import ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE, RESPONSE, ERROR, DEFAULT_PORT, DEFAULT_IP_ADDRESS
-from lesson_3.common.utils import send_message, get_message
+from project.common.variables import ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE, RESPONSE, ERROR, DEFAULT_PORT, DEFAULT_IP_ADDRESS
+from project.common.utils import send_message, get_message
 
 
 def create_presence(account_name='Guest'):

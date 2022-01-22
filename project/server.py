@@ -1,9 +1,9 @@
 import json
 import socket
 import sys
-from lesson_3.common.variables import DEFAULT_PORT, MAX_CONNECTIONS, ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE, \
+from project.common.variables import DEFAULT_PORT, MAX_CONNECTIONS, ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE, \
     RESPONSE, ERROR
-from lesson_3.common.utils import get_message, send_message
+from project.common.utils import get_message, send_message
 
 
 def process_client_message(message):

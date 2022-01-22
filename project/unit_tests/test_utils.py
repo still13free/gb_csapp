@@ -2,9 +2,9 @@ import json
 import unittest
 
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
-from .common.test_variables import *
-from lesson_3.common.variables import *
-from lesson_3.common.utils import send_message, get_message
+from project.common.test_variables import *
+from project.common.variables import *
+from project.common.utils import send_message, get_message
 
 
 class TestUtils(unittest.TestCase):

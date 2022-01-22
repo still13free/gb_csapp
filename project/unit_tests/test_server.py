@@ -1,8 +1,8 @@
 import unittest
 
-from common.test_variables import *
-from lesson_3.common.variables import RESPONSE, ERROR, USER, ACCOUNT_NAME, TIME, ACTION, PRESENCE
-from lesson_3.server import process_client_message
+from project.common.test_variables import *
+from project.common.variables import USER, ACCOUNT_NAME, TIME, ACTION, PRESENCE
+from project.server import process_client_message
 
 
 class TestServer(unittest.TestCase):
