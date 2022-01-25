@@ -10,10 +10,12 @@ from project.common.variables import ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE,
     DEFAULT_PORT, DEFAULT_IP_ADDRESS
 from project.common.utils import send_message, get_message
 from project.common.errors import RequiredFieldMissingError, IncorrectDataReceivedError
+from project.common.decorators import log
 
 LOGGER = logging.getLogger('client')
 
 
+@log
 def create_presence(account_name='Guest'):
     out = {
         ACTION: PRESENCE,
@@ -26,6 +28,7 @@ def create_presence(account_name='Guest'):
     return out
 
 
+@log
 def process_ans(message):
     LOGGER.debug(f'Processing message from server: {message}.')
     if RESPONSE in message:
@@ -35,7 +38,6 @@ def process_ans(message):
     raise RequiredFieldMissingError(RESPONSE)
 
 
-# TODO: разобрать
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('addr', default=DEFAULT_IP_ADDRESS, nargs='?')
@@ -43,7 +45,7 @@ def create_arg_parser():
     return parser
 
 
-def main():
+def main_client():
     parser = create_arg_parser()
     namespace = parser.parse_args(sys.argv[1:])
     server_address = namespace.addr
@@ -85,4 +87,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main_client()

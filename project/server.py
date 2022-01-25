@@ -9,10 +9,12 @@ from project.common.variables import DEFAULT_PORT, MAX_CONNECTIONS, ACTION, TIME
     RESPONSE, ERROR
 from project.common.utils import get_message, send_message
 from project.common.errors import IncorrectDataReceivedError
+from project.common.decorators import log
 
 LOGGER = logging.getLogger('server')
 
 
+@log
 def process_client_message(message):
     LOGGER.debug(f'Processing message from client: {message}.')
     if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
@@ -31,7 +33,7 @@ def create_arg_parser():
     return parser
 
 
-def main():
+def main_server():
     parser = create_arg_parser()
     namespace = parser.parse_args(sys.argv[1:])
     listen_address = namespace.a
@@ -72,4 +74,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main_server()
