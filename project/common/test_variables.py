@@ -1,4 +1,4 @@
-from lesson_3.common.variables import RESPONSE, ERROR
+from project.common.variables import RESPONSE, ERROR
 
 TEST_TIME = 5.13
 TEST_USER = 'test_user'
