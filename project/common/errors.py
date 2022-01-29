@@ -14,3 +14,11 @@ class RequiredFieldMissingError(Exception):
 
     def __str__(self):
         return f'Received dict is missing a required field: {self.missing_field}'
+
+
+class ServerError(Exception):
+    def __init__(self, text):
+        self.text = text
+
+    def __str__(self):
+        return self.text
