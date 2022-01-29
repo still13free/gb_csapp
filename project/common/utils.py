@@ -1,10 +1,11 @@
 import json
 from .variables import MAX_PACKAGE_LENGTH, ENCODING
 from .errors import NonDictInputError, IncorrectDataReceivedError
+from .decorators import log
 
 
+@log
 def get_message(client):
-
     encoded_response = client.recv(MAX_PACKAGE_LENGTH)
     if isinstance(encoded_response, bytes):
         json_response = encoded_response.decode(ENCODING)
@@ -15,6 +16,7 @@ def get_message(client):
     raise IncorrectDataReceivedError
 
 
+@log
 def send_message(sock, message):
     if not isinstance(message, dict):
         raise NonDictInputError
