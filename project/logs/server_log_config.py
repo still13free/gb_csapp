@@ -3,12 +3,12 @@ import sys
 import logging
 import logging.handlers
 
-from project.common.variables import LOGGING_LEVEL, LOG_FORMAT, LOG_DATE
+from project.common.variables import LOGGING_LEVEL, LOG_FORMAT, LOG_DATE, LOG_NOW
 
 FORMATTER = logging.Formatter(LOG_FORMAT)
 
 PATH = os.path.dirname(os.path.abspath(__file__))
-# PATH = os.path.join(PATH, f'server-{LOG_DATE}.log')
+# PATH = os.path.join(PATH, f'server_{LOG_NOW().date}.log')
 PATH = os.path.join(PATH, 'server.log')
 
 # LOG_FILE = logging.FileHandler(PATH, encoding='utf-8')
