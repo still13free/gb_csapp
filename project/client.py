@@ -23,7 +23,7 @@ def process_server_message(sock, my_username):
             message = get_message(sock)
             if ACTION in message and message[ACTION] == MESSAGE and SENDER in message \
                     and DESTINATION in message and message[DESTINATION] == my_username and MESSAGE_TEXT in message:
-                text = f'Message received from user {message[SENDER]}: {message[MESSAGE_TEXT]}.'
+                text = f'Message received from user "{message[SENDER]}": {message[MESSAGE_TEXT]}'
                 print('\n' + text)
                 LOGGER.info(text)
             else:

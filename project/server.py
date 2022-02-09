@@ -3,6 +3,8 @@ import socket
 import sys
 import select
 import logging
+import time
+
 import project.logs.server_log_config
 
 from project.common.variables import DEFAULT_PORT, MAX_CONNECTIONS, ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE, \
@@ -53,7 +55,16 @@ def process_message(message, names, listen_socks):
     elif message[DESTINATION] in names and names[message[DESTINATION]] not in listen_socks:
         raise ConnectionError
     else:
-        LOGGER.error(f'User "{message[DESTINATION]}" not registered on server.')
+        text = f'User "{message[DESTINATION]}" not registered on server.'
+        LOGGER.error(text)
+        service_message = {
+            ACTION: MESSAGE,
+            SENDER: 'server',
+            DESTINATION: message[SENDER],
+            TIME: time.time(),
+            MESSAGE_TEXT: text,
+        }
+        send_message(names[message[SENDER]], service_message)
 
 
 @log
