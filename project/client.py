@@ -1,73 +1,109 @@
 import argparse
 import json
-import time
 import socket
 import sys
+import time
 import threading
 import logging
 import project.logs.client_log_config
 
-from project.common.variables import ACTION, TIME, USER, ACCOUNT_NAME, PRESENCE, RESPONSE, ERROR, \
-    DEFAULT_PORT, DEFAULT_IP_ADDRESS, SENDER, MESSAGE, MESSAGE_TEXT, DESTINATION, EXIT
+from project.common.variables import *
 from project.common.utils import send_message, get_message
 from project.common.errors import RequiredFieldMissingError, IncorrectDataReceivedError, ServerError
 from project.common.decorators import log
+from project.common.metaclasses import ClientMaker
 
 LOGGER = logging.getLogger('client')
 
 
-@log
-def process_server_message(sock, my_username):
-    while True:
+class ClientSender(threading.Thread, metaclass=ClientMaker):
+    def __init__(self, account_name, sock):
+        self.account_name = account_name
+        self.sock = sock
+        super().__init__()
+
+    def create_message(self):
+        to_user = input('Enter message recipient: ')
+        message = input('Enter message itself: ')
+        message_to_send = {
+            ACTION: MESSAGE,
+            SENDER: self.account_name,
+            DESTINATION: to_user,
+            TIME: time.time(),
+            MESSAGE_TEXT: message,
+        }
+        LOGGER.debug(f'Message created: {message_to_send}')
+
         try:
-            message = get_message(sock)
-            if ACTION in message and message[ACTION] == MESSAGE and SENDER in message \
-                    and DESTINATION in message and message[DESTINATION] == my_username and MESSAGE_TEXT in message:
-                text = f'Message received from user "{message[SENDER]}": {message[MESSAGE_TEXT]}'
-                print('\n' + text)
-                LOGGER.info(text)
-            else:
-                LOGGER.error(f'Received incorrect message from server: {message}.')
-        except IncorrectDataReceivedError:
-            LOGGER.error(f'Failed to decode received message.')
-        except (OSError, ConnectionError, ConnectionResetError, ConnectionAbortedError, json.JSONDecodeError):
+            send_message(self.sock, message_to_send)
+            LOGGER.info(f'Message sent to "{to_user}"')
+        except Exception as e:
+            print(e)
             LOGGER.critical(f'Server connection lost.')
-            break
+            exit(1)
+
+    def create_exit_message(self):
+        return {
+            ACTION: EXIT,
+            TIME: time.time(),
+            ACCOUNT_NAME: self.account_name,
+        }
+
+    def run(self):
+        self.print_help()
+        while True:
+            command = input('Enter command: ')
+            if command == '!m' or command == 'message':
+                self.create_message()
+            elif command == '!h' or command == 'help':
+                self.print_help()
+            elif command == '!x' or command == 'exit':
+                try:
+                    send_message(self.sock, self.create_exit_message())
+                except Exception as e:
+                    LOGGER.error(e)
+                LOGGER.info('Shutdown by user command.')
+                print('Shutdown. Thank you for using our service!')
+                time.sleep(1)
+                break
+            else:
+                print('Unknown command. Enter "!h" OR "help" without quotes to get supported commands.')
+
+    @staticmethod
+    def print_help():
+        print('Supported commands:'
+              '\n\t - !m OR message - sending message'
+              '\n\t - !h OR help - print this help'
+              '\n\t - !x OR exit - close program')
+
+
+class ClientReader(threading.Thread, metaclass=ClientMaker):
+    def __init__(self, account_name, sock):
+        self.account_name = account_name
+        self.sock = sock
+        super().__init__()
+
+    def run(self):
+        while True:
+            try:
+                message = get_message(self.sock)
+                if ACTION in message and message[ACTION] == MESSAGE and SENDER in message and DESTINATION in message \
+                        and message[DESTINATION] == self.account_name and MESSAGE_TEXT in message:
+                    text = f'Message received from user "{message[SENDER]}": {message[MESSAGE_TEXT]}'
+                    LOGGER.info(text)
+                    print('\n' + text)
+                    del text
+                else:
+                    LOGGER.error(f'Received incorrect message from server: {message}.')
+            except IncorrectDataReceivedError:
+                LOGGER.error(f'Failed to decode received message.')
+            except (OSError, ConnectionError, ConnectionResetError, ConnectionAbortedError, json.JSONDecodeError):
+                LOGGER.critical(f'Server connection lost.')
+                break
 
 
 @log
-def create_exit_message(account_name):
-    return {
-        ACTION: EXIT,
-        TIME: time.time(),
-        ACCOUNT_NAME: account_name,
-    }
-
-
-@log
-def create_message(sock, account_name='Guest'):
-    to_user = input('Enter message recipient: ')
-    message = input('Enter message itself: ')
-    message_to_send = {
-        ACTION: MESSAGE,
-        SENDER: account_name,
-        DESTINATION: to_user,
-        TIME: time.time(),
-        MESSAGE_TEXT: message,
-    }
-    LOGGER.debug(f'Message created: {message_to_send}')
-
-    try:
-        send_message(sock, message_to_send)
-        LOGGER.info(f'Message sent to "{to_user}"')
-    except Exception as e:
-        print(e)
-        LOGGER.critical(f'Server connection lost.')
-        sys.exit(1)
-
-
-@log
-def create_presence(account_name='Guest'):
+def create_presence(account_name):
     out = {
         ACTION: PRESENCE,
         TIME: time.time(),
@@ -77,33 +113,6 @@ def create_presence(account_name='Guest'):
     }
     LOGGER.debug(f'{PRESENCE}-message generated for user "{account_name}".')
     return out
-
-
-@log
-def user_interactive(sock, username):
-    print_help()
-    while True:
-        command = input('Enter command: ')
-        if command == '!m' or command == 'message':
-            create_message(sock, username)
-        elif command == '!h' or command == 'help':
-            print_help()
-        elif command == '!x' or command == 'exit':
-            send_message(sock, create_exit_message(username))
-            LOGGER.info('Shutdown by user command.')
-            print('Shutdown. Thank you for using our service!')
-            time.sleep(1)
-            break
-        else:
-            print('Unknown command. Enter "!h" OR "help" without quotes to get supported commands.')
-
-
-@log
-def print_help():
-    print('Supported commands:'
-          '\n\t - !m OR message - sending message'
-          '\n\t - !h OR help - print this help'
-          '\n\t - !x OR exit - close program')
 
 
 @log
@@ -157,35 +166,35 @@ def main_client():
 
     except json.JSONDecodeError:
         LOGGER.error('Failed to decode json-string message.')
-        sys.exit(1)
+        exit(1)
 
     except ServerError as err:
         LOGGER.error(f'Server returned error while establishing connection: {err.text}.')
-        sys.exit(1)
+        exit(1)
 
     except RequiredFieldMissingError as err:
         LOGGER.error(f'Required field is missing in server response: {err.missing_field}.')
-        sys.exit(1)
+        exit(1)
 
     except (ConnectionRefusedError, ConnectionError):
         LOGGER.critical(f'Failed to connect to server {server_address}:{server_port}. '
                         f'Server refused connection request.')
-        sys.exit(1)
+        exit(1)
 
     else:
-        receiver = threading.Thread(target=process_server_message, args=(transport, client_name))
+        receiver = ClientReader(client_name, transport)
         receiver.daemon = True
         receiver.start()
 
-        user_interface = threading.Thread(target=user_interactive, args=(transport, client_name))
-        user_interface.daemon = True
-        user_interface.start()
+        sender = ClientSender(client_name, transport)
+        sender.daemon = True
+        sender.start()
 
         LOGGER.debug('Processes running!')
 
     while True:
         time.sleep(1)
-        if receiver.is_alive() and user_interface.is_alive():
+        if receiver.is_alive() and sender.is_alive():
             continue
         break
 
