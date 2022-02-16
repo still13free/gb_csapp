@@ -23,8 +23,7 @@ while True:
 
     elif action == '!x':
         while processes:
-            process = processes.pop()
-            process.kill()
+            processes.pop().kill()
 
     elif action == '!q':
         break
