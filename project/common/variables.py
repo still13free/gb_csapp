@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime
 
+SERVER_DATABASE = 'sqlite:///srv_db.db3'
+
 DEFAULT_PORT = 7777
 DEFAULT_IP_ADDRESS = '127.0.0.1'
 MAX_CONNECTIONS = 5
@@ -28,6 +30,3 @@ LOG_NOW = datetime.now  # !ВАЖНО! функция
 
 RESPONSE_OK = {RESPONSE: 200}
 RESPONSE_ERR = {RESPONSE: 400, ERROR: None}
-
-MODE_LISTEN = 'listen'
-MODE_SEND = 'send'
