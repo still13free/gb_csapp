@@ -7,6 +7,7 @@ import time
 import logging
 import logs.server_log_config
 
+from os import system
 from common.variables import *
 from common.utils import get_message, send_message
 from common.decorators import log
@@ -175,7 +176,7 @@ def main_server():
     print('Messenger server. Ready to work!')
     print_help()
     while True:
-        command = input('Enter command: ')
+        command = input()
         if command == '!h' or command == 'help':
             print_help()
         elif command == '!u' or command == 'users':
@@ -198,3 +199,4 @@ def main_server():
 
 if __name__ == '__main__':
     main_server()
+    system('pause')

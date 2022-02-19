@@ -7,6 +7,7 @@ import threading
 import logging
 import logs.client_log_config
 
+from os import system
 from common.variables import *
 from common.utils import send_message, get_message
 from common.errors import RequiredFieldMissingError, IncorrectDataReceivedError, ServerError
@@ -52,7 +53,7 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
     def run(self):
         self.print_help()
         while True:
-            command = input('Enter command: ')
+            command = input()
             if command == '!m' or command == 'message':
                 self.create_message()
             elif command == '!h' or command == 'help':
@@ -201,3 +202,4 @@ def main_client():
 
 if __name__ == '__main__':
     main_client()
+    system('pause')
