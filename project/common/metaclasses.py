@@ -14,7 +14,7 @@ class ServerMaker(type):
                 pass
             else:
                 for i in ret:
-                    print(i)
+                    # print(i)
                     if i.opname == 'LOAD_GLOBAL':
                         if i.argval not in methods_global:
                             methods_global.append(i.argval)
@@ -24,8 +24,8 @@ class ServerMaker(type):
                     elif i.opname == 'LOAD_ATTR':
                         if i.argval not in attrs:
                             attrs.append(i.argval)
-        print(methods_global)
-        print(methods)
+        # print(methods_global)
+        # print(methods)
 
         if 'connect' in methods:
             raise TypeError('Using "connect" method is not allowed in server class.')

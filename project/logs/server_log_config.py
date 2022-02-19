@@ -3,7 +3,7 @@ import sys
 import logging
 import logging.handlers
 
-from project.common.variables import LOGGING_LEVEL, LOG_FORMAT, LOG_DATE, LOG_NOW
+from common.variables import LOGGING_LEVEL, LOG_FORMAT, LOG_DATE, LOG_NOW
 
 FORMATTER = logging.Formatter(LOG_FORMAT)
 

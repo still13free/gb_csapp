@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 
-from project.common.variables import LOGGING_LEVEL, LOG_FORMAT
+from common.variables import LOGGING_LEVEL, LOG_FORMAT
 
 FORMATTER = logging.Formatter(LOG_FORMAT)
 
