@@ -14,8 +14,8 @@ while True:
             clients = int(input('Clients count: '))
             if not processes:
                 processes.append(Popen('python server.py', creationflags=CREATE_NEW_CONSOLE))
-                for i in range(clients):
-                    processes.append(Popen(f'python client.py -n test{i}', creationflags=CREATE_NEW_CONSOLE))
+                for _ in range(clients):
+                    processes.append(Popen(f'python client.py -n', creationflags=CREATE_NEW_CONSOLE))
         except ValueError:
             print('*' * 43)
             print('WARNING: Number of clients must be integer!')
