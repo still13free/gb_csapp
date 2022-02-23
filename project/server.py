@@ -13,13 +13,13 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
-from common.variables import *
-from common.utils import get_message, send_message
-from common.decorators import log
-from common.descriptors import Port
-from common.metaclasses import ServerMaker
-from db.server_db import ServerDB
-from server_gui import *
+from project.common.variables import *
+from project.common.utils import get_message, send_message
+from project.common.decorators import log
+from project.common.descriptors import Port
+from project.common.metaclasses import ServerMaker
+from project.db.server_db import ServerDB
+from project.server_gui import *
 
 LOGGER = logging.getLogger('server')
 NEW_CONNECTION = False
@@ -105,22 +105,26 @@ class Server(threading.Thread, metaclass=ServerMaker):
             response = RESPONSE_ACP
             response[LIST_INFO] = [user[0] for user in self.database.users_list()]
             send_message(client, response)
+            return
 
         elif ACTION in message and message[ACTION] == GET_CONTACTS and USER in message \
                 and self.names[message[USER]] == client:
             response = RESPONSE_ACP
             response[LIST_INFO] = self.database.get_contacts(message[USER])
             send_message(client, response)
+            return
 
         elif ACTION in message and message[ACTION] == ADD_CONTACT and ACCOUNT_NAME in message \
                 and USER in message and self.names[message[USER]] == client:
             self.database.add_contact(message[USER], message[ACCOUNT_NAME])
             send_message(client, RESPONSE_OK)
+            return
 
         elif ACTION in message and message[ACTION] == REMOVE_CONTACT and ACCOUNT_NAME in message \
                 and USER in message and self.names[message[USER]] == client:
             self.database.del_contact(message[USER], message[ACCOUNT_NAME])
             send_message(client, RESPONSE_OK)
+            return
 
         response = RESPONSE_ERR
         response[ERROR] = 'Bad request.'
@@ -252,10 +256,8 @@ def main_server():
         stat_window.history_table.resizeRowsToContents()
         stat_window.show()
 
-    # Функция создающяя окно с настройками сервера.
     def server_config():
         global config_window
-        # Создаём окно и заносим в него текущие параметры
         config_window = ConfigWindow()
         config_window.db_path.insert(config['SETTINGS']['database_path'])
         config_window.db_file.insert(config['SETTINGS']['database_file'])
@@ -296,4 +298,4 @@ def main_server():
 
 if __name__ == '__main__':
     main_server()
-    os.system('pause')
+    # os.system('pause')

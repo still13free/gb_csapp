@@ -62,7 +62,7 @@ class ClientDB:
         for user in users_list:
             user_row = self.KnownUsers(user)
             self.session.add(user_row)
-        self.session.commit
+        self.session.commit()
 
     def add_contact(self, contact):
         if not self.session.query(self.Contacts).filter_by(name=contact).count():

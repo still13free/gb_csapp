@@ -1,7 +1,7 @@
 import json
-from .variables import MAX_PACKAGE_LENGTH, ENCODING
-from .errors import NonDictInputError, IncorrectDataReceivedError
-from .decorators import log
+from project.common.variables import MAX_PACKAGE_LENGTH, ENCODING
+from project.common.errors import NonDictInputError, IncorrectDataReceivedError
+from project.common.decorators import log
 
 
 @log
