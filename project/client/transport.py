@@ -30,7 +30,7 @@ class ClientTransport(threading.Thread, QObject):
         self.connection_init(ip_address, port)
 
         try:
-            self.user_list_update()
+            self.users_list_update()
             self.contacts_list_update()
         except OSError as err:
             if err.errno:

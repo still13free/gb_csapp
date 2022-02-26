@@ -41,8 +41,8 @@ if __name__ == '__main__':
     if not client_name:
         start_dialog = UserNameDialog()
         client_app.exec_()
-        if start_dialog.ok_pressed:
-            client_name = start_dialog.client_name.text()
+        if start_dialog.start_pressed:
+            client_name = start_dialog.username.text()
             del start_dialog
         else:
             exit(0)
