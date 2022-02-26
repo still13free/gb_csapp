@@ -55,7 +55,7 @@ class Server(threading.Thread, metaclass=ServerMaker):
         transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         transport.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         transport.bind((self.addr, self.port))
-        transport.settimeout(1)
+        transport.settimeout(0.5)
         self.sock = transport
         self.sock.listen()
 
