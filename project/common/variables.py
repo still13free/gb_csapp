@@ -16,6 +16,8 @@ ACCOUNT_NAME = 'account_name'
 SENDER = 'from'
 DESTINATION = 'to'
 SETTINGS = 'SETTINGS'
+DATA = 'bin'
+PUBLIC_KEY = 'pubkey'
 
 PRESENCE = 'presence'
 RESPONSE = 'response'
@@ -28,6 +30,7 @@ LIST_INFO = 'data_list'
 REMOVE_CONTACT = 'remove'
 ADD_CONTACT = 'add'
 USERS_REQUEST = 'get_users'
+PUBLIC_KEY_REQUEST = 'pubkey_need'
 
 LOGGING_LEVEL = logging.DEBUG
 LOG_FORMAT = '%(asctime)s %(levelname)-8s %(filename)s %(message)s'
@@ -37,3 +40,5 @@ LOG_NOW = datetime.now  # !ВАЖНО! функция
 RESPONSE_OK = {RESPONSE: 200}
 RESPONSE_ACP = {RESPONSE: 202, LIST_INFO: None}
 RESPONSE_ERR = {RESPONSE: 400, ERROR: None}
+RESPONSE_RST = {RESPONSE: 205}
+RESPONSE_NAR = {RESPONSE: 511, DATA: None}

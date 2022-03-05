@@ -1,6 +1,9 @@
 from PyQt5.QtWidgets import QMainWindow, qApp, QMessageBox, QApplication, QListView
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QBrush, QColor
 from PyQt5.QtCore import pyqtSlot, QEvent, Qt
+
+import base64
+import json
 import sys
 import logging
 
@@ -11,6 +14,7 @@ from project.client.start_dialog import UserNameDialog
 from project.client.database import ClientDB
 from project.client.transport import ClientTransport
 from project.common.errors import ServerError
+from project.common.variables import *
 
 LOGGER = logging.getLogger('client')
 
@@ -107,7 +111,7 @@ class ClientMainWindow(QMainWindow):
     def add_contact_window(self):
         global select_dialog
         select_dialog = AddContactDialog(self.transport, self.database)
-        select_dialog.btn_start.clicked.connect(lambda: self.add_contact_action(select_dialog))
+        select_dialog.btn_ok.clicked.connect(lambda: self.add_contact_action(select_dialog))
         select_dialog.show()
 
     def add_contact_action(self, item):
@@ -136,7 +140,7 @@ class ClientMainWindow(QMainWindow):
     def delete_contact_window(self):
         global remove_dialog
         remove_dialog = DelContactDialog(self.database)
-        remove_dialog.btn_start.clicked.connect(lambda: self.delete_contact(remove_dialog))
+        remove_dialog.btn_ok.clicked.connect(lambda: self.delete_contact(remove_dialog))
         remove_dialog.show()
 
     def delete_contact(self, item):
@@ -178,12 +182,14 @@ class ClientMainWindow(QMainWindow):
             self.messages.critical(self, 'Ошибка', 'Потеряно соединение с сервером!')
             self.close()
         else:
-            self.database.save_message(self.current_chat, 'out', message_text)
+            self.database.log_message(self.current_chat, 'out', message_text)
             LOGGER.debug(f'Отправлено сообщение для {self.current_chat}: {message_text}')
             self.history_list_update()
 
     @pyqtSlot(str)
-    def message(self, sender):
+    def message(self, message):
+        self.database.log_message(self.current_chat, 'in', message)
+        sender = message[SENDER]
         if sender == self.current_chat:
             self.history_list_update()
         else:
@@ -203,6 +209,7 @@ class ClientMainWindow(QMainWindow):
                                           QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
                     self.add_contact(sender)
                     self.current_chat = sender
+                    self.database.log_message(self.current_chat, 'in', message)
                     self.set_active_user()
 
     @pyqtSlot()
@@ -210,9 +217,18 @@ class ClientMainWindow(QMainWindow):
         self.messages.warning(self, 'Сбой соединения', 'Потеряно соединение с сервером. ')
         self.close()
 
+    @pyqtSlot()
+    def sig_205(self):
+        if self.current_chat and not self.database.check_user(self.current_chat):
+            self.messages.warning(self, 'Сочувствую', 'К сожалению собеседник был удалён с сервера.')
+            self.set_disabled_input()
+            self.current_chat = None
+        self.clients_list_update()
+
     def make_connection(self, trans_obj):
         trans_obj.new_message.connect(self.message)
         trans_obj.connection_lost.connect(self.connection_lost)
+        trans_obj.message_205.connect(self.sig_205)
 
 
 # TODO: сделать отладку

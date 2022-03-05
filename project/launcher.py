@@ -5,17 +5,20 @@ processes = []
 while True:
     print()
     action = input("Choose action:"
-                   "\n\t!l - launch server & clients"
+                   "\n\t!s - launch server"
+                   "\n\t!c - launch clients"
                    "\n\t!x - close all windows"
                    "\n\t!q - quit\n")
 
-    if action == '!l':
+    if action == '!s':
+        if not processes:
+            processes.append(Popen('python server.py', creationflags=CREATE_NEW_CONSOLE))
+
+    if action == '!c':
         try:
             clients = int(input('Clients count: '))
-            if not processes:
-                processes.append(Popen('python server.py', creationflags=CREATE_NEW_CONSOLE))
-                for _ in range(clients):
-                    processes.append(Popen(f'python client.py -n', creationflags=CREATE_NEW_CONSOLE))
+            for _ in range(clients):
+                processes.append(Popen(f'python client.py -n', creationflags=CREATE_NEW_CONSOLE))
         except ValueError:
             print('*' * 43)
             print('WARNING: Number of clients must be integer!')
