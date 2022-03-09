@@ -5,3 +5,5 @@ __pycache__/
 examples/
 practice/
 homework/
+.db3
+.log
