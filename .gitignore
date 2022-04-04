@@ -1,2 +1,9 @@
 .idea/
 venv/
+__pycache__/
+.pyc
+.db3
+.log
+examples/
+practice/
+homework/
